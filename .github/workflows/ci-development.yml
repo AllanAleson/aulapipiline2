@@ -9,6 +9,9 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22, 24]
     steps:
       - name: Checkout codigo
         uses: actions/checkout@v4
@@ -16,7 +19,7 @@ jobs:
       - name: Instalar Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: ${{ matrix.node-version }}
 
       - name: Instalar dependencias
         run: npm install
@@ -51,6 +54,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: build
+    strategy:
+      matrix:
+        node-version: [22, 24]
     steps:
       - name: Baixar artefato
         uses: actions/download-artifact@v4
@@ -63,7 +69,7 @@ jobs:
       - name: Instalar Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: ${{ matrix.node-version }}
 
       - name: Instalar dependencias
         run: npm install
@@ -73,3 +79,30 @@ jobs:
 
       - name: Run Coverage
         run: npm run coverage
+
+  sonar:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Gerar coverage
+        run: npm run coverage
+
+      - name: Analise com SonarCloud
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          args: >
+            -Dsonar.projectKey=AllanAleson_aulapipiline2
+            -Dsonar.organization=allanaleson
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
