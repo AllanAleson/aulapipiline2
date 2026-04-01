@@ -1,10 +1,23 @@
 {
-  "name": "meu-projeto",
+  "name": "pipeline-demo",
   "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "start": "node index.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "coverage": "jest --coverage"
   },
   "devDependencies": {
+    "eslint": "^9.37.0",
     "jest": "^30.3.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageThreshold": {
+      "global": {
+        "lines": 80
+      }
+    }
   }
 }
